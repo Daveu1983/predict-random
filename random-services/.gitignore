@@ -1,0 +1,154 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+*.egg-info/
+
+# Go
+bin/
+pkg/
+*.exe
+*.test
+vendor/
+
+# Java / Maven / Gradle / Quarkus
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+.settings/
+.classpath
+.project
+mvnw
+mvnw.cmd
+
+# Docker / images / compose artifacts
+docker-compose.override.yml
+*.tar
+*.tgz
+
+# Logs, temp and coverage
+logs/
+*.log
+tmp/
+*.tmp
+coverage/
+coverage-final.json
+.nyc_output/
+
+# GCP and credentials (avoid committing service account keys / secrets)
+*.key.json
+*-credentials.json
+credentials.json
+.env.local
+.env.*.local
+
+# Misc
+*.swp
+*.swo
+.cache
+*.bak
+```// filepath: /home/david/developer/mlops/cloudrun-random-services/.gitignore
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+*.egg-info/
+
+# Go
+bin/
+pkg/
+*.exe
+*.test
+vendor/
+
+# Java / Maven / Gradle / Quarkus
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+.settings/
+.classpath
+.project
+mvnw
+mvnw.cmd
+
+# Docker / images / compose artifacts
+docker-compose.override.yml
+*.tar
+*.tgz
+
+# Logs, temp and coverage
+logs/
+*.log
+tmp/
+*.tmp
+coverage/
+coverage-final.json
+.nyc_output/
+
+# GCP and credentials (avoid committing service account keys / secrets)
+*.key.json
+*-credentials.json
+credentials.json
+google-credentials.json
+.env.local
+.env.*.local
+
+# Misc
+*.swp
+*.swo
+.cache
+*.bak

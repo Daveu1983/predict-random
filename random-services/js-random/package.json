@@ -1,0 +1,16 @@
+{
+  "name": "js-random",
+  "version": "1.0.0",
+  "description": "A simple Node.js application that returns a random number between 1 and 100.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "license": "MIT"
+}
