@@ -4,19 +4,19 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/random")
 public class Random {
+
+    @ConfigProperty(name = "urls", defaultValue = "http://localhost:5000/random,http://localhost:8081/random,http://localhost:8083/random")
+    String urls_env;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String random() {
         StringBuilder result = new StringBuilder();
-        String[] urls = new String[] {
-            "http://localhost:5000/random",
-            "http://localhost:8081/random",
-            "http://localhost:8083/random"
-        };
+        String[] urls = urls_env.split(",");
         for (int i = 0; i < 100; i++) {
             for (String url : urls) {
                 try {

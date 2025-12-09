@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  getting-random:
+    build: ./getting-random
+    ports:
+      - "8080:8080"
+    environment:
+      URLS: "http://python-random:5000/random,http://golang-random:8081/random,http://js-random:8083/random"
+    networks:
+      - random-net
+
+  golang-random:
+    build: ./golang-random
+    ports:
+      - "8081:8081"
+    networks:
+      - random-net
+
+  js-random:
+    build: ./js-random
+    ports:
+      - "8083:8083"
+    networks:
+      - random-net
+
+  python-random:
+    build: ./python-random
+    ports:
+      - "5000:5000"
+    networks:
+      - random-net
+
+networks:
+  random-net:
+
