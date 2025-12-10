@@ -12,12 +12,15 @@ public class Random {
     @ConfigProperty(name = "urls", defaultValue = "http://localhost:5000/random,http://localhost:8081/random,http://localhost:8083/random")
     String urls_env;
 
+    @ConfigProperty(name = "iterations", defaultValue = "100")
+    int iterations;
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String random() {
         StringBuilder result = new StringBuilder();
         String[] urls = urls_env.split(",");
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < iterations; i++) {
             for (String url : urls) {
                 try {
                     java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
