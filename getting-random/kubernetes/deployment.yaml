@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: getting-random-deployment
+  labels:
+    app: getting-random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: getting-random
+  template:
+    metadata:
+      labels:
+        app: getting-random
+    spec:
+      containers:
+      - name: getting-random
+        image: mlops-getting-random:v1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ENV
+          value: prod
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx512m"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
