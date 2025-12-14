@@ -20,6 +20,9 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/random")
 public class Random {
 
+    @Inject
+    ProducerTemplate producerTemplate;
+
     @ConfigProperty(name = "urls", defaultValue = "http://localhost:5000/random,http://localhost:8081/random,http://localhost:8083/random")
     String urls_env;
 
@@ -28,6 +31,12 @@ public class Random {
 
     @ConfigProperty(name = "csv.filename", defaultValue = "random-data.csv")
     String csvFileName;
+
+    @ConfigProperty(name = "gcs.bucket.name", defaultValue = "random-data-bucket")
+    String gcsBucketName;
+
+    @ConfigProperty(name = "env", defaultValue = "dev")
+    String env;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -80,14 +89,20 @@ public class Random {
             }
         }
 
-        File file = new File(csvFileName);
-        try (FileWriter writer = new FileWriter(file)) {
-            writer.write(result.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Error writing to file: " + e.getMessage();
+        if (env.equals("prd")) {
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("CamelGoogleStorageObjectName", csvFileName);
+            producerTemplate.sendBodyAndHeaders("google-storage://" + gcsBucketName, result.toString(), headers);
+            return "File " + csvFileName + " uploaded to GCS bucket " + gcsBucketName;
+        } else {
+            File file = new File(csvFileName);
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(result.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Error writing to file: " + e.getMessage();
+            }
+            return "File " + csvFileName + " created in the current directory.";
         }
-
-        return "File " + csvFileName + " created in the current directory.";
-       }
+    }
 }
