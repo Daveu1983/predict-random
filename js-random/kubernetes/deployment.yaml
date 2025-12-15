@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: js-random-deployment
+  labels:
+    app: js-random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: js-random
+  template:
+    metadata:
+      labels:
+        app: js-random
+    spec:
+      containers:
+      - name: js-random
+        image: mlops-js-random:v1
+        ports:
+        - containerPort: 8083

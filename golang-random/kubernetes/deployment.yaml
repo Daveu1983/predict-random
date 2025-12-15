@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-random-deployment
+  labels:
+    app: golang-random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: golang-random
+  template:
+    metadata:
+      labels:
+        app: golang-random
+    spec:
+      containers:
+      - name: golang-random
+        image: mlops-golang-random:v1
+        ports:
+        - containerPort: 8081

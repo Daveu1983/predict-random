@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-random-deployment
+  labels:
+    app: python-random
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-random
+  template:
+    metadata:
+      labels:
+        app: python-random
+    spec:
+      containers:
+      - name: python-random
+        image: mlops-python-random:v1
+        ports:
+        - containerPort: 5000
