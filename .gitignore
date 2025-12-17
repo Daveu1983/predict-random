@@ -79,6 +79,7 @@ credentials.json
 # OS
 .DS_Store
 Thumbs.db
+/gcs-data/
 
 # IDEs and editors
 .vscode/

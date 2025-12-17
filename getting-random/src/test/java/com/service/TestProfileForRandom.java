@@ -10,7 +10,9 @@ public class TestProfileForRandom implements QuarkusTestProfile {
         return Map.of(
             "iterations", "1",
             "urls", "http://localhost:1",
-            "quarkus.http.test-port", "0"
+            "quarkus.http.test-port", "0",
+            "mp.messaging.outgoing.random-data.connector", "smallrye-in-memory",
+            "csv.filename", "test-random-data.csv"
         );
     }
 }

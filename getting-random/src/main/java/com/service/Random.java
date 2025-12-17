@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.apache.camel.ProducerTemplate;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -22,6 +24,10 @@ public class Random {
 
     @Inject
     ProducerTemplate producerTemplate;
+
+    @Inject
+    @Channel("random-data")
+    Emitter<String> randomDataEmitter;
 
     @ConfigProperty(name = "urls", defaultValue = "http://localhost:5000/random,http://localhost:8081/random,http://localhost:8083/random")
     String urls_env;
@@ -89,11 +95,12 @@ public class Random {
             }
         }
 
+        String message;
         if (env.equals("prd")) {
             Map<String, Object> headers = new HashMap<>();
             headers.put("CamelGoogleStorageObjectName", csvFileName);
             producerTemplate.sendBodyAndHeaders("google-storage://" + gcsBucketName, result.toString(), headers);
-            return "File " + csvFileName + " uploaded to GCS bucket " + gcsBucketName;
+            message = "File " + csvFileName + " uploaded to GCS bucket " + gcsBucketName;
         } else {
             File file = new File(csvFileName);
             try (FileWriter writer = new FileWriter(file)) {
@@ -102,7 +109,10 @@ public class Random {
                 e.printStackTrace();
                 return "Error writing to file: " + e.getMessage();
             }
-            return "File " + csvFileName + " created in the current directory.";
+            message = "File " + csvFileName + " created in the current directory.";
         }
+
+        randomDataEmitter.send("Data processing complete. " + message);
+        return message;
     }
 }
