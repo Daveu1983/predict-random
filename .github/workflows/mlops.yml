@@ -107,11 +107,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase repository owner
+        id: repo
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push training service image
         uses: docker/build-push-action@v6
         with:
           context: training-random-check
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mlops-training-random-check:latest
-            ghcr.io/${{ github.repository_owner }}/mlops-training-random-check:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-training-random-check:latest
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-training-random-check:${{ github.sha }}

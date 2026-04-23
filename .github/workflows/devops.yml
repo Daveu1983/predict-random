@@ -57,6 +57,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Lowercase repository owner
+        id: repo
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
       - name: Build getting-random JAR
         working-directory: getting-random
         run: mvn package -DskipTests -Dquarkus.package.jar.type=uber-jar
@@ -67,8 +71,8 @@ jobs:
           context: getting-random
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mlops-getting-random:latest
-            ghcr.io/${{ github.repository_owner }}/mlops-getting-random:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-getting-random:latest
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-getting-random:${{ github.sha }}
 
       - name: Build and push python-random
         uses: docker/build-push-action@v6
@@ -76,8 +80,8 @@ jobs:
           context: python-random
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mlops-python-random:latest
-            ghcr.io/${{ github.repository_owner }}/mlops-python-random:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-python-random:latest
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-python-random:${{ github.sha }}
 
       - name: Build and push golang-random
         uses: docker/build-push-action@v6
@@ -85,8 +89,8 @@ jobs:
           context: golang-random
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mlops-golang-random:latest
-            ghcr.io/${{ github.repository_owner }}/mlops-golang-random:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-golang-random:latest
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-golang-random:${{ github.sha }}
 
       - name: Build and push js-random
         uses: docker/build-push-action@v6
@@ -94,5 +98,5 @@ jobs:
           context: js-random
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/mlops-js-random:latest
-            ghcr.io/${{ github.repository_owner }}/mlops-js-random:${{ github.sha }}
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-js-random:latest
+            ghcr.io/${{ steps.repo.outputs.owner }}/mlops-js-random:${{ github.sha }}
