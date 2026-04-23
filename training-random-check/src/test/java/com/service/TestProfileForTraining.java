@@ -8,7 +8,8 @@ public class TestProfileForTraining implements QuarkusTestProfile {
     @Override
     public Map<String, String> getConfigOverrides() {
         return Map.of(
-            "mp.messaging.incoming.random-data.connector", "smallrye-in-memory"
+            "mp.messaging.incoming.random-data.connector", "smallrye-in-memory",
+            "model.filename", "target/test-random-model.json"
         );
     }
 }

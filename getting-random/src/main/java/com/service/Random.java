@@ -26,6 +26,9 @@ public class Random {
     ProducerTemplate producerTemplate;
 
     @Inject
+    ModelLoader modelLoader;
+
+    @Inject
     @Channel("random-data")
     Emitter<String> randomDataEmitter;
 
@@ -51,8 +54,10 @@ public class Random {
         String[] urls = urls_env.split(",");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
+        RandomModel model = modelLoader.getModel();
+
         // Add CSV header
-        result.append("datetime,attempt,url,status,body\n");
+        result.append("datetime,attempt,url,status,body,zscore\n");
 
         for (int i = 0; i < iterations; i++) {
             for (String url : urls) {
@@ -78,18 +83,19 @@ public class Random {
                     result.append(url).append(",");
                     result.append(resp.statusCode()).append(",");
                     String body = resp.body() == null ? "" : resp.body().trim().replace(",", ";");
-                    result.append(body);
+                    result.append(body).append(",");
+                    result.append(score(model, url, body));
 
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     result.append(dateTime).append(",");
                     result.append(i + 1).append(",");
-                    result.append(url).append(",interrupted,");
+                    result.append(url).append(",interrupted,,N/A");
                 } catch (Exception e) {
                     result.append(dateTime).append(",");
                     result.append(i + 1).append(",");
                     result.append(url).append(",error,");
-                    result.append(e.getMessage());
+                    result.append(e.getMessage()).append(",N/A");
                 }
                 result.append("\n");
             }
@@ -112,7 +118,20 @@ public class Random {
             message = "File " + csvFileName + " created in the current directory.";
         }
 
-        randomDataEmitter.send("Data processing complete. " + message);
+        randomDataEmitter.send(result.toString());
         return message;
+    }
+
+    private String score(RandomModel model, String url, String body) {
+        if (model == null) return "no_model";
+        SourceStats stats = model.sources.get(url);
+        if (stats == null) return "unknown_source";
+        try {
+            double value = Double.parseDouble(body);
+            if (stats.stdDev == 0) return "0.00";
+            return String.format("%.2f", (value - stats.mean) / stats.stdDev);
+        } catch (NumberFormatException e) {
+            return "N/A";
+        }
     }
 }

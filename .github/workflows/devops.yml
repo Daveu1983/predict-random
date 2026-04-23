@@ -1,0 +1,98 @@
+name: DevOps — Build and Publish Services
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'training-random-check/**'
+  workflow_run:
+    workflows: ["MLOps — Train and Publish Model"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    # When triggered by MLOps pipeline, only run if it succeeded
+    if: >
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Download latest model from GitHub Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_MODEL_TAG=$(gh release list --limit 20 --json tagName \
+            --jq '[.[] | select(.tagName | startswith("model-"))][0].tagName')
+
+          if [ -n "$LATEST_MODEL_TAG" ]; then
+            echo "Downloading model from release: $LATEST_MODEL_TAG"
+            gh release download "$LATEST_MODEL_TAG" \
+              --pattern 'random-model.json' \
+              --dir getting-random/
+          else
+            echo "No trained model found — using empty placeholder"
+            echo '{"version":"none","trainedAt":"","totalSamples":0,"sources":{}}' \
+              > getting-random/random-model.json
+          fi
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build getting-random JAR
+        working-directory: getting-random
+        run: mvn package -DskipTests -Dquarkus.package.jar.type=uber-jar
+
+      - name: Build and push getting-random
+        uses: docker/build-push-action@v6
+        with:
+          context: getting-random
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mlops-getting-random:latest
+            ghcr.io/${{ github.repository_owner }}/mlops-getting-random:${{ github.sha }}
+
+      - name: Build and push python-random
+        uses: docker/build-push-action@v6
+        with:
+          context: python-random
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mlops-python-random:latest
+            ghcr.io/${{ github.repository_owner }}/mlops-python-random:${{ github.sha }}
+
+      - name: Build and push golang-random
+        uses: docker/build-push-action@v6
+        with:
+          context: golang-random
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mlops-golang-random:latest
+            ghcr.io/${{ github.repository_owner }}/mlops-golang-random:${{ github.sha }}
+
+      - name: Build and push js-random
+        uses: docker/build-push-action@v6
+        with:
+          context: js-random
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/mlops-js-random:latest
+            ghcr.io/${{ github.repository_owner }}/mlops-js-random:${{ github.sha }}
